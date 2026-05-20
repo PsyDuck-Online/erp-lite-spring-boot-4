@@ -1,0 +1,4 @@
+// erp-common: shared utilities, no additional dependencies
+dependencies {
+    //Dependencias comunes para todos los módulos se eheredan del build.gradle raíz
+}

@@ -5,5 +5,3 @@ include 'erp-domain'
 include 'erp-application'
 include 'erp-infrastructure'
 include 'erp-api'
-
-include 'erp-api:src:resources'

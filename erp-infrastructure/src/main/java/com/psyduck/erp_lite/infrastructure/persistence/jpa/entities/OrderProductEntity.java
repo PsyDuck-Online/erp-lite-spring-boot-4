@@ -1,0 +1,99 @@
+package com.psyduck.erp_lite.infrastructure.persistence.jpa.entities;
+
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.UuidGenerator;
+
+import java.math.BigDecimal;
+import java.util.UUID;
+
+@Entity
+@Table(name = "order_products")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class OrderProductEntity {
+
+    @Id
+    @GeneratedValue
+    @UuidGenerator
+    @Column(
+            name = "id",
+            nullable = false,
+            updatable = false
+    )
+    private UUID id;
+
+    @ManyToOne(
+            fetch = FetchType.LAZY,
+            optional = false
+    )
+    @JoinColumn(
+            name = "order_id",
+            nullable = false,
+            foreignKey = @ForeignKey(
+                    name = "fk_order_products_order"
+            )
+    )
+    private OrderEntity order;
+
+    @ManyToOne(
+            fetch = FetchType.LAZY,
+            optional = false
+    )
+    @JoinColumn(
+            name = "product_id",
+            nullable = false,
+            foreignKey = @ForeignKey(
+                    name = "fk_order_products_product"
+            )
+    )
+    private ProductEntity product;
+
+    @Column(
+            name = "product_name",
+            nullable = false,
+            length = 200
+    )
+    private String productName;
+
+    @Column(
+            name = "quantity",
+            nullable = false
+    )
+    private Integer quantity;
+
+    @Column(
+            name = "unit_price",
+            nullable = false,
+            precision = 15,
+            scale = 2
+    )
+    private BigDecimal unitPrice;
+
+    @Column(
+            name = "subtotal",
+            nullable = false,
+            precision = 15,
+            scale = 2
+    )
+    private BigDecimal subtotal;
+
+    @PrePersist
+    @PreUpdate
+    void calculateSubtotal() {
+
+        if (quantity != null && unitPrice != null) {
+
+            subtotal = unitPrice.multiply(
+                    BigDecimal.valueOf(quantity)
+            );
+        }
+
+        if(product != null && (productName == null || productName.isBlank())) {
+            productName = product.getName();
+        }
+    }
+}
